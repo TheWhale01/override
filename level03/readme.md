@@ -60,8 +60,8 @@ Q = 01010001
 C = 01000011  
 
 On a ? = 00010010 ce qui vaut 18 en base 10.
-Il nous suffit de faire 1337d00d - 18 = 322424827
-322424827 est donc notre mot de passe
+Il nous suffit de faire `1337d00d - 18 = 322424827`  
+322424827 est donc notre mot de passe.
 
 ```bash
 level03@OverRide:~$ ./level03
