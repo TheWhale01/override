@@ -6,15 +6,11 @@
 
 void clear_stdin(void)
 {
-    int iVar1;
+    int ascii_c;
 
-    do {
-      iVar1 = getchar();
-      if ((char)iVar1 == '\n') {
-        return;
-      }
-    } while ((char)iVar1 != -1);
-    return;
+    while ((ascii_c = getchar()) != -1)
+        if ((char)ascii_c == '\n')
+            return ;
 }
 
 uint get_unum(void)
