@@ -54,7 +54,7 @@ int main(int ac, char **av)
         ascii_c = fgetc(user_fp);
         if (ascii_c == -1)
             break;
-        write(fd, &ascii_c, STDOUT_FILENO);
+        write(fd, &ascii_c, 1);
     }
     log_wrapper(log_fp, "Finished back up " ,av[1]);
     fclose(user_fp);
