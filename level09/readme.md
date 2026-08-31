@@ -31,7 +31,7 @@ void set_msg(char *msg)
     puts(">: Msg @Unix-Dude");
     printf(">>: ");
     fgets(buff, 1024, stdin);
-    strncpy(msg, buff, (long)*(int*)(msg + 180));
+    strncpy(msg, buff, (long)msg[180]));
 }
 
 void set_username(long offset)
@@ -43,7 +43,7 @@ void set_username(long offset)
     printf(">>: ");
     fgets(buff, 0x80, stdin);
     for (int i = 0; i < 41 && buff[i] != '\0'; i++)
-        *(char *)(offset + 140 + i) = buff[i];
+        offset[140 + i] = buff[i];
     printf(">: Welcome, %s", (char *)offset + 140);
 }
 
@@ -67,7 +67,7 @@ int main(void)
 }
 ```
 
-L'idee ici est d'ecraser l'adresse de retour de `set_msg()` pour executer `secret_backdoor()`. D'abord voici l'adresse de notre fonction `secret_backdoor()`. La difference est que dans ce niveau le PIE est active donc `objdump` ou `gdb` ne nous donneront pas les adresses absolue mais seulement les offset par rapport a l'adresse de base du binaire. Pour contourner cela et avoir l'adresse de `secret_backdoor()` nous pouvons utiliser gdb:
+L'idee ici est d'ecraser l'adresse de retour de `set_msg()` pour executer `secret_backdoor()`. La difference est que dans ce niveau le PIE est active donc `objdump` ou `gdb` ne nous donneront pas les adresses absolues mais seulement les offsets par rapport a l'adresse de base du binaire. Pour contourner cela et avoir l'adresse de `secret_backdoor()` nous pouvons utiliser gdb:
 
 ```bash
 level09@OverRide:~$ gdb ./level09
@@ -100,7 +100,7 @@ Mapped address spaces:
 
 Maintenant nous pouvons faire `0x88c + 0x555555554000` pour obtenir l'adresse de `secret_backdoor()`: `0x55555555488c`
 
-Nous allons donc devoir ecraser l'adresse de retour de `set_msg()` par cette valeur. Pour ceci nous allons devoir modifier la valeur de `len` faisant overflow le username etant donne que la copie n'est pas protegee. Voici donc la premiere partie de notre payload:
+Nous allons donc devoir ecraser l'adresse de retour de `set_msg()` par cette valeur. Pour ceci nous allons devoir modifier la valeur de `len` faisant overflow `username` etant donne que la copie n'est pas protegee. Voici donc la premiere partie de notre payload:
 
 ```bash
 level09@OverRide:~$ python -c 'print "A" * 40 + "\xff"' | ./level09

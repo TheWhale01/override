@@ -26,7 +26,7 @@ void set_msg(char *msg)
     puts(">: Msg @Unix-Dude");
     printf(">>: ");
     fgets(buff, 1024, stdin);
-    strncpy(msg, buff, (long)*(int*)(msg + 180));
+    strncpy(msg, buff, (long)msg[180]));
 }
 
 void set_username(long offset)
@@ -38,7 +38,7 @@ void set_username(long offset)
     printf(">>: ");
     fgets(buff, 0x80, stdin);
     for (int i = 0; i < 41 && buff[i] != '\0'; i++)
-        *(char *)(offset + 140 + i) = buff[i];
+        offset[140 + i] = buff[i];
     printf(">: Welcome, %s", (char *)offset + 140);
 }
 
